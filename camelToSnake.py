@@ -1,8 +1,7 @@
-import os    
-import re
+import os
 
 def is_camel_case(word):
-    return re.match(r'[A-Z][a-z]+', word) is not None
+    return word != word.lower() and word != word.upper() and "_" not in word
 
 def to_snake_case(word):
     fragments = [word[0].lower()]
@@ -14,24 +13,21 @@ def to_snake_case(word):
             fragments.append(c)
     return "".join(fragments)
 
-
 def iterateFiles():
-    directory = input("Type the root directory: ");
+    directory = input("Type the root directory: ")
 
     for root, dirs, files in os.walk(directory):
         for file in files:
             file_path = os.path.join(root, file)
-            with open(file_path, "r") as f_in:
-                with open(file_path + ".new", "w") as f_out:
-                    for line in f_in:
-                        words = line.split()
-                        for i, word in enumerate(words):
-                            if is_camel_case(word):
-                                words[i] = to_snake_case(word)
-                        f_out.write(" ".join(words) + "\n")
-            os.rename(file_path + ".new", file_path)
+            with open(file_path, "r+") as f_in:
+                for line in f_in:
+                    words = line.split()
+                    for i, word in enumerate(words):
+                        if is_camel_case(word):
+                            words[i] = to_snake_case(word)
+                        f_in.write(words + "\n")
 
-    print("Files changed");
+    print("Files changed")
 
 
 iterateFiles()
